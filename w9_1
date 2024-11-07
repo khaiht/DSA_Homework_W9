@@ -62,3 +62,155 @@ int function_strcmp(const char *s1, const char *s2){
 void function_strcpy(char *dest, const char *src){
     while ((*dest++ = *src++) != '\0');
 }
+
+//nhập thông tin sinh viên
+void nhapSinhVien(SinhVien *sv) {
+    printf("Nhap ma SV: ");
+    scanf("%7s", sv->maSV);
+
+    printf("Nhap ho ten: ");
+    scanf(" %[^\n]", sv->hoTen);
+
+    printf("Nhap gioi tinh (0: Nam, 1: Nu): ");
+    while (scanf("%d", &sv->gioiTinh) != 1 || (sv->gioiTinh != 0 && sv->gioiTinh != 1)) {
+        printf("Gioi tinh khong hop le. Nhap lai (0: Nam, 1: Nu): ");
+        while (getchar() != '\n');
+    }
+
+    printf("Nhap ngay sinh (ngay thang nam): ");
+    scanf("%d%d%d", &sv->ngaySinh.ngay, &sv->ngaySinh.thang, &sv->ngaySinh.nam);
+
+    printf("Nhap dia chi: ");
+    scanf(" %[^\n]", sv->diaChi);
+
+    printf("Nhap lop: ");
+    scanf("%11s", sv->lop);
+
+    printf("Nhap khoa:");
+    scanf("%6s", sv->khoa);
+}
+
+//tạo node mới
+Node* taoNode(SinhVien sv) {
+    Node *node = (Node*)malloc(sizeof(Node));
+    if (node != NULL) {
+        node->data = sv;
+        node->link = NULL;
+    }
+    return node;
+}
+
+//thêm sinh viên vào danh sách
+void themSinhVien(List *list, SinhVien sv) {
+    Node *node = taoNode(sv);
+    if (node == NULL) return;
+
+    if (list->first == NULL || function_strcmp(sv.maSV, list->first->data.maSV) < 0) {
+        node->link = list->first;
+        list->first = node;
+        if (list->last == NULL) list->last = node;
+    } else {
+        Node *p = list->first;
+        while (p->link != NULL && function_strcmp(p->link->data.maSV, sv.maSV) < 0) {
+            p = p->link;
+        }
+        node->link = p->link;
+        p->link = node;
+        if (node->link == NULL) list->last = node;
+    }
+}
+
+//in danh sách sinh viên
+void inDanhSach(List list) {
+    Node *p = list.first;
+    while (p != NULL) {
+        printf("Ma SV: %s, Ho ten: %s, Gioi tinh: %d, Ngay sinh: %02d/%02d/%04d, Dia chi: %s, Lop: %s, Khoa: %s\n",
+            p->data.maSV, p->data.hoTen, p->data.gioiTinh, p->data.ngaySinh.ngay, p->data.ngaySinh.thang, p->data.ngaySinh.nam,
+            p->data.diaChi, p->data.lop, p->data.khoa);
+        p = p->link;
+    }
+}
+
+//tìm ra những sinh viên có cùng ngày sinh
+void timSinhVienCungNgaySinh(List list, Ngay ngaySinh) {
+    Node *p = list.first;
+    int timThay = 0;
+    while (p != NULL) {
+        if (p->data.ngaySinh.ngay == ngaySinh.ngay &&
+            p->data.ngaySinh.thang == ngaySinh.thang &&
+            p->data.ngaySinh.nam == ngaySinh.nam) {
+            printf("Ma SV: %s, Ho ten: %s\n", p->data.maSV, p->data.hoTen);
+            timThay = 1;
+        }
+        p = p->link;
+    }
+    if (!timThay) {
+        printf("Khong tim thay sinh vien cung ngay sinh\n");
+    }
+}
+
+//xóa sinh viên có cùng ngày sinh
+void loaiBoSinhVienCungNgaySinh(List *list, Ngay ngaySinh) {
+    Node *p = list->first;
+    Node *prev = NULL;
+
+    while (p != NULL) {
+        if (p->data.ngaySinh.ngay == ngaySinh.ngay &&
+            p->data.ngaySinh.thang == ngaySinh.thang &&
+            p->data.ngaySinh.nam == ngaySinh.nam) {
+            if (prev == NULL) {
+                list->first = p->link;
+                if (list->first == NULL) {
+                    list->last = NULL;
+                }
+            } else {
+                prev->link = p->link;
+                if (prev->link == NULL) {
+                    list->last = prev;
+                }
+            }
+            Node *temp = p;
+            p = p->link;
+            free(temp);
+        } else {
+            prev = p;
+            p = p->link;
+        }
+    }
+}
+
+int main() {
+    List list;
+    khoiTaoList(&list);
+
+    int n;
+    printf("Nhap so luong sinh vien: ");
+    scanf("%d", &n);
+    printf("\n");
+
+    for (int i = 0; i < n; i++) {
+        printf("Nhap thong tin cho sinh vien %d:\n", i + 1);
+        SinhVien sv;
+        nhapSinhVien(&sv);
+        themSinhVien(&list, sv);
+        printf("\n");
+    }
+
+    //in danh sách sinh viên
+    printf("Danh sach sinh vien:\n");
+    inDanhSach(list);
+
+    //tìm sinh viên có cùng ngày sinh
+    Ngay ngaySinh;
+    printf("Nhap ngay sinh can tim (ngay thang nam): ");
+    scanf("%d%d%d", &ngaySinh.ngay, &ngaySinh.thang, &ngaySinh.nam);
+    printf("Sinh vien co cung ngay sinh:\n");
+    timSinhVienCungNgaySinh(list, ngaySinh);
+
+    //xóa sinh viên có cùng ngày sinh
+    loaiBoSinhVienCungNgaySinh(&list, ngaySinh);
+    printf("Danh sach sau khi loai bo sinh vien co cung ngay sinh:\n");
+    inDanhSach(list);
+
+    return 0;
+}
