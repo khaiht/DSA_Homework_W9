@@ -43,8 +43,22 @@ void khoiTaoList(List *list){
 //hàm tính độ dài chuỗi
 int function_strlen(const char *s){
     int length = 0;
-    while (s[length] != '0'){
+    while (s[length] != '\0'){
         length++;
     }
     return length;
+}
+
+//hàm so sánh độ dài chuỗi
+int function_strcmp(const char *s1, const char *s2){
+    while (*s1 && (*s1 == *s2)){
+        s1++;
+        s2++;
+    }
+    return *(unsigned char *)s1 - *(unsigned char *)s2;
+}
+
+//sao chép chuỗi
+void function_strcpy(char *dest, const char *src){
+    while ((*dest++ = *src++) != '\0');
 }
