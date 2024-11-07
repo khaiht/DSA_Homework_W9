@@ -33,4 +33,18 @@ typedef struct
     Node *last;
 } List;
 
+//khởi tạo danh sách
 
+void khoiTaoList(List *list){
+    list->first = NULL;
+    list->last = NULL;
+}
+
+//hàm tính độ dài chuỗi
+int function_strlen(const char *s){
+    int length = 0;
+    while (s[length] != '0'){
+        length++;
+    }
+    return length;
+}
