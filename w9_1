@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+//khai báo cấu trúc ngày
+typedef struct 
+{
+    int ngay, thang, nam;
+} Ngay;
+
+//khai báo cấu trúc SinhVien
+typedef struct
+{
+    char maSV[8];
+    char hoTen[50];
+    int gioiTinh;
+    Ngay ngaySinh;
+    char diaChi[100];
+    char lop[12];
+    char khoa[7];
+} SinhVien;
+
+//khai báo cấu trúc Node
+typedef struct Node
+{
+    SinhVien data;
+    struct Node *link;
+} Node;
+
+//khai báo cấu trúc List
+typedef struct 
+{
+    Node *first;
+    Node *last;
+} List;
+
+
